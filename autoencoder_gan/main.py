@@ -16,13 +16,13 @@ def parse_args():
     parser.add_argument('--graph_path', dest='graph_path', help='path of the graph',
                         default='./graph', type=str)
     parser.add_argument('--batch_size', dest='batch_size', help='batch size',
-                        default=64, type=int)
+                        default=16, type=int)
     parser.add_argument('--epoch', dest='epoch', help='epoch',
                         default=20, type=int)
     parser.add_argument('--restore', dest='restore', help='restore',
                         default=False, type=bool)
     parser.add_argument('--mode', dest='mode', help='train or test',
-                        default='test', type=str)
+                        default='train', type=str)
     args = parser.parse_args()
 
     return args
