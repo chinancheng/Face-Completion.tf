@@ -1,6 +1,7 @@
 import matplotlib
 matplotlib.use('Agg')
 from train import Train
+from test import Test
 import os
 import argparse
 
@@ -20,6 +21,8 @@ def parse_args():
                         default=20, type=int)
     parser.add_argument('--restore', dest='restore', help='restore',
                         default=False, type=bool)
+    parser.add_argument('--mode', dest='mode', help='train or test',
+                        default='test', type=str)
     args = parser.parse_args()
 
     return args
@@ -35,11 +38,15 @@ if __name__ == '__main__':
     output_path = args.output_path
     graph_path = args.graph_path
     restore = args.restore
+    mode = args.mode
     
     if not os.path.exists(output_path):
         os.makedirs(output_path)
-    
-    train = Train(epoch, batch_size, data_path, model_path, output_path, graph_path, restore)
-    train.train()
-
+        
+    if mode == 'train':
+        train = Train(epoch, batch_size, data_path, model_path, output_path, graph_path, restore)
+        train.train()
+    elif mode == 'test':    
+        test = Test(batch_size, data_path, model_path, output_path)
+        test.test()
                             
