@@ -20,4 +20,18 @@ python main.py
 ### Result
 <img src='./Readmefile/autoencoder-noise.png'> <img src='./Readmefile/autoencoder-G.png'>
 
-## Autoencoder + GAN  
+## Autoencoder + GAN
+### Run
+```
+python main.py
+--epoch 
+--batch_size
+--data_path
+--model_path
+--output_path
+--graph_path
+--restore
+--mode
+```
+### Network
+<img src='./Readmefile/autoencoder_gan_arch.png'>  
