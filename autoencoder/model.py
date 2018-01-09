@@ -15,7 +15,7 @@ class Model:
       
             return out
       
-    def global_discriminator(self, x, dropout=False, reuse=False):
+    def discriminator(self, x, dropout=False, reuse=False):
         with tf.variable_scope('D') as scope:
             if reuse:
                 scope.reuse_variables()

@@ -9,7 +9,7 @@ import os
 class Train:
     def __init__(self, epoch, batch_size, data_path, model_path, output_path, graph_path, restore=False):
         self.batch_size = batch_size
-        self.GAMMA = 0.01
+        self.GAMMA = 0.001
         self.model = Model(batch_size)
         self.train_dataloader = Dataset(os.path.join(data_path, 'train'))
         self.train_test_dataloader = Dataset(os.path.join(data_path, 'train'))
@@ -34,15 +34,20 @@ class Train:
                 mask = tf.placeholder(dtype=tf.float32, shape=[self.batch_size, 96, 96, 3])
                 inverse_mask = tf.placeholder(dtype=tf.float32, shape=[self.batch_size, 96, 96, 3])
                 x = y*mask + random*inverse_mask
-                
+
+                p_order = tf.random_uniform(shape=[], minval=0., maxval=1., dtype=tf.float32)
+                pred = tf.less(p_order, 0.2)
+                y_ = tf.cond(pred, lambda: tf.random_shuffle(y), lambda: y)
+                real_label = tf.cond(pred, lambda: tf.zeros((self.batch_size, 1)), lambda: tf.ones((self.batch_size, 1)))
+
                 #generator
                 G_output = self.model.generator(x)
                 G_output_sample = self.model.generator(x, reuse=True)
             
                 #discriminator
-                G_output = y*mask + G_output*inverse_mask
-                D_real = self.model.discriminator(y)
-                D_fake = self.model.discriminator(G_output, reuse=True)
+                G_output_mix = y*mask + G_output*inverse_mask
+                D_real = self.model.discriminator(y_)
+                D_fake = self.model.discriminator(G_output_mix, reuse=True)
                 
                 #variable_list
                 t_vars = tf.trainable_variables()   
@@ -50,20 +55,21 @@ class Train:
                 var_D = [var for var in t_vars if 'D' in var.name]
                 
                 #loss              
-                real_label = tf.ones((self.batch_size, 1))
+                #real_label = tf.ones((self.batch_size, 1))
                 fake_label = tf.zeros((self.batch_size, 1))
                 D_real_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=real_label, logits=D_real))
                 D_fake_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=fake_label, logits=D_fake))
                 G_fake_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=real_label, logits=D_fake)) 
-                C_loss = tf.nn.l2_loss(y*inverse_mask - G_output*inverse_mask)
+                C_loss = tf.nn.l2_loss(G_output - y) 
                 D_loss = (D_real_loss + D_fake_loss)/2
                 G_loss = G_fake_loss + self.GAMMA*C_loss
 
                 global_step = tf.Variable(0, trainable=False)
                 
+                lr = tf.train.exponential_decay(1e-4, global_step, 100000, 0.1, staircase=True, name=None)
                 #optimizer
-                G_op = tf.train.AdamOptimizer(learning_rate=1e-4, beta1=0.5)
-                D_op = tf.train.AdamOptimizer(learning_rate=1e-4, beta1=0.5)
+                G_op = tf.train.AdamOptimizer(learning_rate=lr, beta1=0.5)
+                D_op = tf.train.AdamOptimizer(learning_rate=lr, beta1=0.5)
                          
                 D_train_op = D_op.minimize(D_loss, global_step=global_step, var_list=var_D)
                 G_train_op = G_op.minimize(G_loss, global_step=global_step, var_list=var_G)
@@ -90,8 +96,8 @@ class Train:
                     print('Start training ...')
                     
                     while True:
+                        block_mask, inverse_block_mask = creat_random_mask(self.batch_size)
                         epoch, idx_train, y_batch = self.train_dataloader.load_batch(self.batch_size, idx_train, size=[96, 96])
-                        block_mask, inverse_block_mask = creat_random_mask(shape=y_batch.shape)
                         random_noise = np.random.normal(size=y_batch.shape)
                         
                         #Discriminator
@@ -107,8 +113,8 @@ class Train:
                         #sample 
                         if step % 300 == 0:
                             #sample training data
+                            block_mask, inverse_block_mask = creat_random_mask(self.batch_size)
                             _, idx_test, y_batch = self.test_dataloader.load_batch(self.batch_size, idx_test, size=[96, 96])
-                            block_mask, inverse_block_mask = creat_random_mask(shape=y_batch.shape)
                             random_noise = np.random.normal(size=y_batch.shape)
                             G_output_out, x_batch = sess.run([G_output_sample, x], feed_dict={random:random_noise, y:y_batch, mask:block_mask, inverse_mask:inverse_block_mask})
 
@@ -120,8 +126,8 @@ class Train:
                             plot(G_output_out, name=str(step)+'-fakeG' ,output_path=self.output_path)
                             
                             #sample testing data
+                            block_mask, inverse_block_mask = creat_random_mask(self.batch_size)
                             _, idx_train_test, y_batch = self.train_test_dataloader.load_batch(self.batch_size, idx_train_test, size=[96, 96])
-                            block_mask, inverse_block_mask = creat_random_mask(shape=y_batch.shape)
                             random_noise = np.random.normal(size=y_batch.shape)
                             G_output_out, x_batch = sess.run([G_output_sample, x], feed_dict={random:random_noise, y:y_batch, mask:block_mask, inverse_mask:inverse_block_mask})
 
