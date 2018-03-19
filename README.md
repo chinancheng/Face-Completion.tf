@@ -1,7 +1,7 @@
 # CEDL_FINAL Face Completion
 ## Dataset
 * Use [**CELEBA**](http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html)  
-* Generate noise in center (64x64) in utils.py
+* Generate noise at center (64x64) in utils.py
 ## Autoencoder  
 ### Run    
 * Load pre-trained  
