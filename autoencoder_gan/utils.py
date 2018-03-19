@@ -18,19 +18,13 @@ def plot(samples, name, output_path):
     plt.savefig(os.path.join(output_path, '{0}.png'.format(name)), bbox_inches='tight')
     plt.close(fig)
     
-def creat_random_mask(batch_size):
-    block_mask = np.ones([batch_size, 96, 96, 3]).astype('float32')
-    inverse_block_mask = np.zeros([batch_size, 96, 96, 3]).astype('float32')
-    x = np.random.randint(low=40, high=56, size=[batch_size])
-    y = np.random.randint(low=40, high=56, size=[batch_size])
-    w = np.random.randint(low=12, high=36, size=[batch_size])
-    h = np.random.randint(low=12, high=36, size=[batch_size])
-    idx = 0
-    for x_idx, y_idx, w_idx, h_idx in zip(x, y, w, h):
-        block_mask[idx, y_idx-h_idx:y_idx+h_idx, x_idx-w_idx:x_idx+w_idx, :] = 0.0
-        inverse_block_mask[idx, y_idx-h_idx:y_idx+h_idx, x_idx-w_idx:x_idx+w_idx, :] = 1.0
-        idx += 1
-    
+def create_noise_mask(shape):
+    block_mask = np.ones(shape).astype('float32')
+    inverse_block_mask = np.zeros(shape).astype('float32')
+    batch_size = shape[0]
+    block_mask[:, 16:80, 16:80, :] = 0.0
+    inverse_block_mask[:, 16:80, 16:80, :] = 1.0
+        
     return block_mask, inverse_block_mask
 
     
