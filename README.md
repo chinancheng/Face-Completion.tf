@@ -1,7 +1,7 @@
 # CEDL_FINAL Face Completion
 ## Dataset
-* Use **CELEBA** `img_align_celeba 000001~111157.jpg` as training data, else as testing data  
-* The path under THOR is `/media/VSlab3/guy/autoencoder/data`
+* Use [**CELEBA**](http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html)  
+* Generate noise in center (64x64) in utils.py
 ## Autoencoder  
 ### Run    
 * Load pre-trained  
@@ -15,10 +15,10 @@ python main.py
 --output_path
 --graph_path
 --restore
---mode
+--mode=train/test
 ```
 ### Result
-<img src='./Readmefile/autoencoder-noise.png'> <img src='./Readmefile/autoencoder-G.png'>
+<img src='./Readmefile/in_ag.png' width = "200" height = "200"> <img src='./Readmefile/out_a.png' width = "200" height = "200">
 
 ## Autoencoder + GAN
 ### Run
@@ -31,7 +31,13 @@ python main.py
 --output_path
 --graph_path
 --restore
---mode
+--mode=train/test
 ```
 ### Network
-<img src='./Readmefile/autoencoder_gan_arch.png'>  
+<img src='./Readmefile/autoencoder_gan_arch.png'>
+
+### Loss
+<img src='./Readmefile/loss.png'>
+
+### Result
+<img src='./Readmefile/in_ag.png' width = "200" height = "200"> <img src='./Readmefile/out_ag.png' width = "200" height = "200">
