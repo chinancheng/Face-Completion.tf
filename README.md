@@ -1,5 +1,6 @@
-# CEDL_FINAL Face Completion
+# Face Completion
 ## Overview
+A TensorFlow implementation using residual convolution autoencoder with/without discriminator for Face Completion
 
 ## Dataset
 * Use [**CELEBA**](http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html)  
