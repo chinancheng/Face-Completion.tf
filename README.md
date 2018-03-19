@@ -19,9 +19,10 @@ A TensorFlow implementation using residual convolution autoencoder with/without 
   ```
 
 ## Requirements
-* Tensorflow 1.4 
+* Python == 2.7
+* Tensorflow == 1.4 
 * Skimage
-* Matplotlib 2.0.0
+* Matplotlib == 2.0.0
 
 ## Autoencoder  
 ### Run    
