@@ -12,7 +12,7 @@ A TensorFlow implementation using residual convolution autoencoder with/without 
       -data
         -train
         -test
-    -autoencoder-gan
+    -autoencoder_gan
       -data
         -train
         -test
