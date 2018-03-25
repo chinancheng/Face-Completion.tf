@@ -96,8 +96,8 @@ class Train:
                     print('Start training ...')
                     
                     while True:
-                        block_mask, inverse_block_mask = creat_random_mask(self.batch_size)
                         epoch, idx_train, y_batch = self.train_dataloader.load_batch(self.batch_size, idx_train, size=[96, 96])
+                        block_mask, inverse_block_mask = create_noise_mask(y_batch.shape)
                         random_noise = np.random.normal(size=y_batch.shape)
                         
                         #Discriminator
@@ -113,8 +113,8 @@ class Train:
                         #sample 
                         if step % 300 == 0:
                             #sample training data
-                            block_mask, inverse_block_mask = creat_random_mask(self.batch_size)
                             _, idx_test, y_batch = self.test_dataloader.load_batch(self.batch_size, idx_test, size=[96, 96])
+                            block_mask, inverse_block_mask = create_noise_mask(y_batch.shape)
                             random_noise = np.random.normal(size=y_batch.shape)
                             G_output_out, x_batch = sess.run([G_output_sample, x], feed_dict={random:random_noise, y:y_batch, mask:block_mask, inverse_mask:inverse_block_mask})
 
@@ -126,8 +126,8 @@ class Train:
                             plot(G_output_out, name=str(step)+'-fakeG' ,output_path=self.output_path)
                             
                             #sample testing data
-                            block_mask, inverse_block_mask = creat_random_mask(self.batch_size)
                             _, idx_train_test, y_batch = self.train_test_dataloader.load_batch(self.batch_size, idx_train_test, size=[96, 96])
+                            block_mask, inverse_block_mask = create_noise_mask(y_batch.shape)
                             random_noise = np.random.normal(size=y_batch.shape)
                             G_output_out, x_batch = sess.run([G_output_sample, x], feed_dict={random:random_noise, y:y_batch, mask:block_mask, inverse_mask:inverse_block_mask})
 
