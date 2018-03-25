@@ -8,7 +8,7 @@ import argparse
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--data_path', dest='data_path', help='path of the data',
-                        default='./data/img_align_celeba', type=str)
+                        default='./data', type=str)
     parser.add_argument('--model_path', dest='model_path', help='path of the model folder',
                         default='./model/', type=str)
     parser.add_argument('--output_path', dest='output_path', help='path of the output folder',
