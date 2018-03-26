@@ -10,6 +10,7 @@ class Train:
     def __init__(self, epoch, batch_size, data_path, model_path, output_path, graph_path, restore=False):
         self.batch_size = batch_size
         self.GAMMA = 0.001
+        self.Pre_train_content_step = 20000
         self.model = Model(batch_size)
         self.train_dataloader = Dataset(os.path.join(data_path, 'train'))
         self.train_test_dataloader = Dataset(os.path.join(data_path, 'train'))
@@ -75,7 +76,7 @@ class Train:
                 G_train_op = G_op.minimize(G_loss, global_step=global_step, var_list=var_G)
                 
                 #tensorboard
-                tf.summary.scalar('Content_loss', C_loss)
+                C_loss_op = tf.summary.scalar('Content_loss', C_loss)
                 tf.summary.scalar('Generator_loss', G_loss)
                 tf.summary.scalar('Discriminator_loss', D_loss)
                 summary_op = tf.summary.merge_all()
@@ -94,21 +95,29 @@ class Train:
                             raise
                     summary_writer = tf.summary.FileWriter(self.graph_path, sess.graph)
                     print('Start training ...')
-                    
+                    step = 0
+
                     while True:
                         epoch, idx_train, y_batch = self.train_dataloader.load_batch(self.batch_size, idx_train, size=[96, 96])
                         block_mask, inverse_block_mask = create_noise_mask(y_batch.shape)
                         random_noise = np.random.normal(size=y_batch.shape)
                         
                         #Discriminator
-                        _, loss_D, loss_G, step, summary = sess.run([D_train_op, D_loss, G_loss, global_step, summary_op],
+                        if step < self.Pre_train_content_step:
+                            _, loss_C, step, summary = sess.run([G_train_op, C_loss, global_step, C_loss_op],
                                                                 feed_dict={random:random_noise, y:y_batch, mask:block_mask, inverse_mask:inverse_block_mask})
-                        summary_writer.add_summary(summary, global_step=step)
-                        _, loss_D, loss_G, step, summary = sess.run([G_train_op,  D_loss, G_loss, global_step, summary_op],
+                            summary_writer.add_summary(summary, global_step=step)
+                            if step % 10 == 0:
+                                print('Epoch: {0} Step: {1} Loss_C: {2}' .format(epoch, step, loss_C))
+                        else:
+                            _, loss_D, loss_G, step, summary = sess.run([D_train_op, D_loss, G_loss, global_step, summary_op],
                                                                 feed_dict={random:random_noise, y:y_batch, mask:block_mask, inverse_mask:inverse_block_mask})
-                        summary_writer.add_summary(summary, global_step=step)
-                        if step % 10 == 0:
-                            print('Epoch: {0} Step: {1} Loss_D: {2} Loss_G: {3}'.format(epoch, step, loss_D, loss_G))
+                            summary_writer.add_summary(summary, global_step=step)
+                            _, loss_D, loss_G, step, summary = sess.run([G_train_op,  D_loss, G_loss, global_step, summary_op],
+                                                                feed_dict={random:random_noise, y:y_batch, mask:block_mask, inverse_mask:inverse_block_mask})
+                            summary_writer.add_summary(summary, global_step=step)
+                            if step % 10 == 0:
+                                print('Epoch: {0} Step: {1} Loss_D: {2} Loss_G: {3}'.format(epoch, step, loss_D, loss_G))
                 
                         #sample 
                         if step % 300 == 0:

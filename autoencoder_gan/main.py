@@ -6,19 +6,19 @@ import argparse
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--data_path', dest='data_path', help='path of the data',
+    parser.add_argument('-d', '--data_path', dest='data_path', help='path of the data',
                         default='./data/', type=str)
-    parser.add_argument('--model_path', dest='model_path', help='path of the model folder',
+    parser.add_argument('-m', '--model_path', dest='model_path', help='path of the model folder',
                         default='./model/', type=str)
-    parser.add_argument('--output_path', dest='output_path', help='path of the output folder',
+    parser.add_argument('-o', '--output_path', dest='output_path', help='path of the output folder',
                         default='./out', type=str)
-    parser.add_argument('--graph_path', dest='graph_path', help='path of the graph',
+    parser.add_argument('-g', '--graph_path', dest='graph_path', help='path of the graph',
                         default='./graph', type=str)
-    parser.add_argument('--batch_size', dest='batch_size', help='batch size',
+    parser.add_argument('-b', '--batch_size', dest='batch_size', help='batch size',
                         default=32, type=int)
-    parser.add_argument('--epoch', dest='epoch', help='epoch',
+    parser.add_argument('-e', '--epoch', dest='epoch', help='epoch',
                         default=20, type=int)
-    parser.add_argument('--restore', dest='restore', help='restore',
+    parser.add_argument('-r', '--restore', dest='restore', help='restore',
                         default=False, type=bool)
     args = parser.parse_args()
 
