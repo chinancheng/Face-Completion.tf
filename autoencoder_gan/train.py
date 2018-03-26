@@ -129,7 +129,6 @@ class Train:
 
                             #visualize
                             G_output_out = G_output_out*inverse_block_mask + y_batch*block_mask
-                            G_output_out = np.squeeze(G_output_out)
                             plot(x_batch, name=str(step)+'-noiseX' ,output_path=self.output_path)
                             plot(y_batch, name=str(step)+'-realX' ,output_path=self.output_path)
                             plot(G_output_out, name=str(step)+'-fakeG' ,output_path=self.output_path)
@@ -142,7 +141,6 @@ class Train:
 
                             #visualize
                             G_output_out = G_output_out*inverse_block_mask + y_batch*block_mask
-                            G_output_out = np.squeeze(G_output_out)
                             plot(x_batch, name=str(step)+'-noiseX-train' ,output_path=self.output_path)
                             plot(y_batch, name=str(step)+'-realX-train' ,output_path=self.output_path)
                             plot(G_output_out, name=str(step)+'-fakeG-train' ,output_path=self.output_path)
